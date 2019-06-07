@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
-
 from kombu.utils.imports import symbol_by_name
 from kombu.utils.objects import cached_property
-import tcelery
+import six
 from tornado.web import Application as BaseApplication
 
 from . import controllers as c
@@ -14,17 +12,26 @@ from . import controllers as c
 class Application(BaseApplication):
     @cached_property
     def celery(self):
-        """:rtype: qiniu_ufop.task.UFOPCelery"""
-        obj_str = self.settings["ufop_celery"]
-        return symbol_by_name(obj_str)
+        """:rtype: qiniu_ufop.task.QiniuUFOP"""
+        obj = self.settings["app"]
+        if isinstance(obj, six.text_type):
+            return symbol_by_name(obj)
+        return obj
+
+    @cached_property
+    def dispatcher(self):
+        """:rtype: qiniu_ufop.web.disapcher.Dispatcher"""
+        cls = self.settings.get(
+            "ufop_dispatcher", "qiniu_ufop.web.dispatcher.Dispatcher")
+        return symbol_by_name(cls)(self.celery)
 
 
 def create_app(**settings):
-    tcelery.setup_nonblocking_producer()
+    # tcelery.setup_nonblocking_producer()
     return Application(
         handlers=(
-            (r"/", c.HealthController),
-            (r"/handler", c.HandlerController)
+            (r"/health/?", c.HealthController),
+            (r"/handler/?", c.HandlerController)
         ),
         **settings
     )

@@ -1,19 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import re
+try:
+    from io import BytesIO
+except ImportError:
+    from cStringIO import StringIO as BytesIO
 
-from six.moves import cStringIO as StringIO
-from tornado.gen import coroutine, Task
+from kombu.utils.imports import symbol_by_name
+from kombu.utils.objects import cached_property
+from tornado.concurrent import Future
+from tornado.gen import coroutine
 from tornado.httpclient import AsyncHTTPClient
+from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
 
 __all__ = ("HandlerController", "HealthController")
 
 
-class HandlerController(RequestHandler):
-    """处理自定义业务控制器"""
+class BaseController(RequestHandler):
+    @property
+    def dispatcher(self):
+        """:rtype: qiniu_ufop.web.dispatcher.AbstractDispatcher"""
+        return self.application.dispatcher
 
+
+class HandlerController(BaseController):
+    """处理自定义业务控制器"""
     @coroutine
     def post(self):
         cmd = self.get_argument("cmd")
@@ -25,38 +37,54 @@ class HandlerController(RequestHandler):
             content_type = resp.headers.get("Content-Type")
         else:
             # 从POST body直接读取
-            buffer = StringIO(self.request.body)
+            buffer = BytesIO(self.request.body)
             content_type = self.request.headers.get("Content-Type")
 
-        response = yield self.dispatch(buffer, cmd, content_type)
-        result = self.handle_result(response.result)
-        # self.set_header()
-        # self.write()
-        # self.finish()
+        task = self.dispatcher.dispatch(
+            buffer, cmd, content_type, self.request)
+        job = self.apply(task)
+        future = self.make_future(job)
+        yield future
+        result = future.result()
+        response = self.result_handler.make_response(result)
 
-    def dispatch(self, buffer, cmd, content_type):
-        """根据cmd派发任务"""
-        task, args = self.parse_cmd(cmd)
-        return Task(task, args=(buffer, args, content_type))
+        self.send(response)
+        self.finish()
 
-    def parse_cmd(self, cmd):
-        """将cmd拆解为传给task的arguments"""
-        for route, task in self.application.celery.routers:
-            match = re.search(cmd, route)
-            if match:
-                return task, match.groupdict()
-        else:
-            raise ValueError # not found
+    def apply(self, task):
+        return task.apply_async()
 
-    def handle_result(self, result):
-        """处理任务结果"""
-        return result
+    def make_future(self, job):
+        def check_status(job, future):
+            if job.ready():
+                future.set_result(job.result)
+            else:
+                IOLoop.current().call_later(0.1, check_status, job, future)
+
+        future = Future()
+        check_status(job, future)
+        return future
+
+    def send(self, response):
+        self.set_status(response.code, response.reason)
+        for header, value in response.headers.items():
+            self.set_header(header, value)
+        self.write(response.body)
+
+    @cached_property
+    def result_handler(self):
+        """:rtype: qiniu_ufop.web.result.ResultHandler"""
+        cls = self.application.settings.get(
+            "ufop_dispatcher", "qiniu_ufop.web.result.ResultHandler")
+        return symbol_by_name(cls)()
 
 
-class HealthController(RequestHandler):
+class HealthController(BaseController):
     """健康检查控制器"""
-
     def get(self):
         """健康检查控制器应响应200 OK的空串"""
+        for handler in self.dispatcher.listall():
+            if hasattr(handler, "health"):
+                handler.health()
         self.write("")
         self.finish()
