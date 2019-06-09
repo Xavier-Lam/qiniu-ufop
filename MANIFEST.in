@@ -1,0 +1,7 @@
+recursive-include qiniu_ufop/data *
+include LICENSE
+include MANIFEST.in
+include README.md
+include requirements.txt
+global-exclude __pycache__
+global-exclude *.py[co]

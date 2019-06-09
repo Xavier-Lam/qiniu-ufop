@@ -27,7 +27,7 @@ setup(
     author=package["__author__"],
     author_email=package["__author_email__"],
     url=package["__url__"],
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests', 'tests.*')),
     keywords=["qiniu", "ufop", "七牛"],
     description=package["__description__"],
     long_description=long_description,
@@ -35,7 +35,7 @@ setup(
     install_requires=requirements,
     include_package_data=True,
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
@@ -59,7 +59,7 @@ setup(
     ],
     entry_points = dict(
         console_scripts=[
-            "qiniu-ufop = bin.manage:main"
+            "qiniu-ufop = qiniu_ufop.management:main"
         ],              
     ),
 )
