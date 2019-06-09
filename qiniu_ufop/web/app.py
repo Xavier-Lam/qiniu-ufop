@@ -27,7 +27,6 @@ class Application(BaseApplication):
 
 
 def create_app(**settings):
-    # tcelery.setup_nonblocking_producer()
     return Application(
         handlers=(
             (r"/health/?", c.HealthController),

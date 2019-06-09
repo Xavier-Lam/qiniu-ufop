@@ -4,7 +4,9 @@ from __future__ import unicode_literals
 import os
 from shutil import copyfile
 
-from ... import demo
+from kombu.utils.objects import cached_property
+
+import qiniu_ufop
 from ..base import BaseCommand
 
 
@@ -13,7 +15,7 @@ class Command(BaseCommand):
         if args.dir and not os.path.exists(args.dir):
             os.makedirs(args.dir)
 
-        copyfile(demo.__file__, os.path.join(args.dir, "app.py"))
+        self.copydata("demo.py", args.dir, "app.py")
 
         requirements = os.path.join(args.dir, "requirements.txt")
         if not os.path.exists(requirements):
@@ -27,11 +29,18 @@ class Command(BaseCommand):
                     "export C_FORCE_ROOT=1"
                 ))
 
-        datadir = os.path.join(os.path.dirname(demo.__file__), "data")
-        supervisor_conf = "supervisor.conf"
-        copyfile(
-            os.path.join(datadir, supervisor_conf),
-            os.path.join(args.dir, supervisor_conf))
+        self.copydata("supervisor.conf", args.dir)
+        self.copydata(".dockerignore", args.dir)
 
     def add_arguments(self):
         self.parser.add_argument("dir", default="", nargs="?")
+
+    def copydata(self, filename, target_dir, targetname=""):
+        targetname = targetname or filename
+        return copyfile(
+            os.path.join(self.datadir, filename),
+            os.path.join(target_dir, targetname))
+
+    @cached_property
+    def datadir(self):
+        return os.path.join(os.path.dirname(qiniu_ufop.__file__), "data")

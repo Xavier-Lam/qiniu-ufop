@@ -30,10 +30,9 @@ def redirect_stdout(new_target):
 
 
 def get_worker_instance(name=None):
+    sys.path.append(os.getcwd())
     name = name or os.getenv("QINIU_UFOP_CELERY")
     if not name:
         #  app默认取当前工作路径的app.ufop
-        sys.path.append(os.getcwd())
         name = "app.ufop"
-    celery = symbol_by_name(name)
-    return celery
+    return symbol_by_name(name)
