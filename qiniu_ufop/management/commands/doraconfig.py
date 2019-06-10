@@ -9,6 +9,8 @@ from ..base import BaseCommand
 
 
 class Command(BaseCommand):
+    """生成dora.yaml"""
+
     def execute(self, args, unknown):
         conf = dict(
             ufopname=args.name,
@@ -39,8 +41,10 @@ class Command(BaseCommand):
         yaml.dump(conf, sys.stdout, sort_keys=False)
 
     def add_arguments(self):
-        self.parser.add_argument("-n", "--name", required=True)
+        self.parser.add_argument(
+            "-n", "--name", required=True, help="自定义处理程序名")
         self.parser.add_argument("-t", "--tag", required=True)
-        self.parser.add_argument("-v", "--version", required=True)
-        self.parser.add_argument("--flavor", default="C1M1")
-        self.parser.add_argument("--desc")
+        self.parser.add_argument(
+            "-v", "--version", required=True, help="版本")
+        self.parser.add_argument("--flavor", default="C1M1", help="配置")
+        self.parser.add_argument("--desc", help="描述")

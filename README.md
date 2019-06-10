@@ -1,8 +1,8 @@
 # Qiniu-ufop
 
-本项目提供一个高效便捷的**七牛自定义数据处理**脚手架,以便开发人员专注数据处理业务逻辑.
+本项目提供一个便捷高性能的**七牛自定义数据处理**脚手架,以便开发人员专注数据处理业务逻辑.
 
-目前尚未编写单元测试,也没有完善的异常处理机制.采用Python 3.6进行开发.
+目前尚未编写单元测试,也没有完善的异常处理机制.采用Python 3.6进行开发,不确保其他版本运行正常.
 
 - [Quickstart](#quickstart)
   - [安装](#安装)
@@ -93,6 +93,11 @@
 
 ## 使用
 ### 命令行工具
+可通过
+
+    qiniu-ufop -h
+
+看到详细说明
 
 ### 一键部署
 一键部署假设用户
@@ -102,17 +107,12 @@
 
         qiniu-ufop deploy -t <image-tag> -n <ufop-name> -v <version>
 
-> 注意: 该操作默认将覆盖项目目录下的`Dockerfile`及`dora.yaml`,如希望使用项目目录下已有的Dockerfile及dora.yaml,请使用`--no-replace`
-
 ### 手工部署
 [官方文档](https://developer.qiniu.com/dora/manual/1224/quick-start)
 
 此章节假定用户已完成自定义数据处理程序的开发,本地安装有docker环境,并处在自定义处理程序目录下
 
 #### 生成镜像
-* 生成Dockerfile,并根据自身需求修改
-
-        qiniu-ufop dockerfile > Dockerfile
 * 构建docker镜像
 
         docker build . -t <tag>
@@ -135,9 +135,9 @@
 其他依照官方文档配置,在高级配置中
 * 健康配置Path请填写`/health`
 * 日志路径添加
-  * 任务处理异常日志 `/var/log/worker-error`
-  * web处理异常日志 `/var/log/server-error`
-  * supervisor日志 `/tmp/supervisord.log`
+  * 任务处理异常日志 `/var/log/worker/`
+  * web处理异常日志 `/var/log/server/`
+  * supervisor日志 `/var/log/supervisor/`
 
 ## 调试
 ### 本地调试处理程序
@@ -224,6 +224,6 @@ unset本机环境变量DOCKER_TLS_VERIFY(以windows为例)
 
 > 吐槽一下七牛的工单处理,我提了至少3个bug,要么装傻,要么说对不起,我们有问题,请你使用其他方法...另外文档自定义数据处理这块文档也比较糟糕.
 
-> 有问题可以提issue我问我
+> 有问题可以提issue我问我,star数上50再考虑单元测试吧~
 
 Xavier-Lam@NetDragon

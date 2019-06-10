@@ -6,6 +6,8 @@ from ..base import BaseCommand
 
 
 class Command(BaseCommand):
+    """运行worker"""
+
     def execute(self, args, unknown):
         app = get_worker_instance(args.app)
         app.worker_main(["worker"] + unknown + ["-c", str(cpu_count())])

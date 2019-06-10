@@ -1,8 +1,7 @@
-# 本文件由qiniu-ufop自动生成
-# 开发者可根据自身需求进行修改
-
 FROM ubuntu:18.04
-MAINTAINER Xavier-Lam <Lam.Xavier@hotmail.com>
+LABEL maintainer="Xavier-Lam <Lam.Xavier@hotmail.com>"
+LABEL description="本文件由qiniu-ufop自动生成,开发者可根据自身需求进行修改"
+LABEL poweredby="qiniu-ufop <https://github.com/Xavier-Lam/qiniu-ufop>"
 
 RUN mkdir /data
 RUN mkdir -p /var/log
@@ -31,5 +30,10 @@ ADD supervisor.conf /data/supervisor.conf
 RUN cat supervisor.conf >> /etc/supervisord.conf
 RUN mkdir -p /var/log/server/ /var/log/supervisor/ /var/log/worker/
 
+# 设置环境变量
+ENV C_FORCE_ROOT 1
+# TODO: 开发者在此设置其他环境变量
+# ...
+
 # 运行
-CMD /bin/bash -c "source ./.env && redis-server --save \"\" --appendonly no --daemonize yes && supervisord -n -c /etc/supervisord.conf"
+CMD /bin/bash -c "redis-server --save \"\" --appendonly no --daemonize yes && supervisord -n -c /etc/supervisord.conf"

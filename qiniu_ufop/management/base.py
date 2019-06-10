@@ -30,7 +30,8 @@ class CommandParser(ArgumentParser):
         for name in command_names:
             cls = symbol_by_name(
                 "qiniu_ufop.management.commands.%s:Command" % name)
-            parser = self.parsers.add_parser(name)
+            parser = self.parsers.add_parser(
+                name, help=cls.__doc__, description=cls.__doc__)
             parser.root = self
             cmd = cls(parser)
             rv[name] = cmd
