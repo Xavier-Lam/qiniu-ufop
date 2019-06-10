@@ -15,11 +15,12 @@ class Command(BaseCommand):
     def execute(self, args, unknown):
         app = get_worker_instance(args.app)
         debug = args.debug
+        webapp = args.webapp
 
         port = args.port
 
         application = create_app(
-            app=app, debug=debug, autoreload=args.autoreload)
+            webapp, app=app, debug=debug, autoreload=args.autoreload)
         if debug:
             application.listen(port)
         else:
@@ -31,6 +32,9 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.parser.add_argument("-A", "--app")
+        self.parser.add_argument(
+            "--webapp", default="qiniu_ufop.web.Application",
+            help="web默认cls")
         self.parser.add_argument(
             "--debug", action="store_true", help="开启调试模式")
         self.parser.add_argument(

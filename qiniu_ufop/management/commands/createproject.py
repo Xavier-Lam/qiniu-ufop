@@ -19,6 +19,9 @@ class Command(BaseCommand):
         if args.dir and not os.path.exists(dst):
             os.makedirs(dst)
         copy_tree(src, dst)
+        requirements = os.path.join(dst, "requirements.txt")
+        with open(requirements, "a") as f:
+            f.writelines(["qiniu-ufop==%s" % qiniu_ufop.__version__])
 
     def add_arguments(self):
         self.parser.add_argument("dir", default="", nargs="?", help="文件夹")

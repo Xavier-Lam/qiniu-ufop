@@ -9,7 +9,7 @@ from qiniu_ufop import QiniuUFOP, Response
 ufop = QiniuUFOP()
 
 
-@ufop.task(route=r"^/hello(?:/(?P<name>\w+))?$")
+@ufop.task(route=r"^/hello(?:/(?P<name>\w+)/?)?$")
 def hello(buffer, args, content_type):
     """参数处理"""
     return "hello " + args.get("name", "world")

@@ -26,8 +26,9 @@ class Application(BaseApplication):
         return symbol_by_name(cls)(self.celery)
 
 
-def create_app(**settings):
-    return Application(
+def create_app(cls_name, **settings):
+    cls = symbol_by_name(cls_name)
+    return cls(
         handlers=(
             (r"/health/?", c.HealthController),
             (r"/handler/?", c.HandlerController)

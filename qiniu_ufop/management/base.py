@@ -9,6 +9,8 @@ import sys
 from kombu.utils.imports import symbol_by_name
 from kombu.utils.objects import cached_property
 
+import qiniu_ufop
+
 
 def find_commands(dir):
     command_dir = os.path.join(dir, "commands")

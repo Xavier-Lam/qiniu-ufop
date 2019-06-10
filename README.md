@@ -1,8 +1,12 @@
 # Qiniu-ufop
 
+[![PyPI](https://img.shields.io/pypi/v/qiniu-ufop.svg)](https://pypi.org/project/qiniu-ufop)
+
 本项目提供一个便捷高性能的**七牛自定义数据处理**脚手架,以便开发人员专注数据处理业务逻辑.
 
 目前尚未编写单元测试,也没有完善的异常处理机制.采用Python 3.6进行开发,不确保其他版本运行正常.
+
+项目官方站点 https://github.com/Xavier-Lam/qiniu-ufop
 
 - [Quickstart](#quickstart)
   - [安装](#安装)
@@ -83,13 +87,13 @@
 * 自行部署时,请务必在环境变量(开发路径下的.env文件)中写入CPU核数`CPU_COUNT`或实例配置`FLAVOR`,才能开启正确数量的worker及web,否则,qiniu-ufop将默认取单核,也就是单实例运行web及worker
 
 ## 开发
-数据处理器实际上是一个[celery任务](http://docs.celeryproject.org/en/latest/userguide/tasks.html),这个任务必须接受一个`route`参数,指明会路由到该处理器的cmd,如果全局只有一个处理器,可以使用`.*`或`^$`作为路由.
+数据处理器实际上是一个[celery任务](http://docs.celeryproject.org/en/latest/userguide/tasks.html),这个任务必须接受一个`route`参数,指明会路由到该处理器的cmd,如果全局只有一个处理器,可以使用`.*`或`^$`作为路由.理论上可以使用celery复杂的任务分发.
 
-被装饰的处理起接受三个参数,第一个是待处理文件的`io.BytesIO`,第二个是路由匹配到的相关参数,第三个是文件的Content-Type.
+被装饰的处理起接受三个参数,第一个是待处理文件的`io.BytesIO`,第二个是路由匹配到的参数字典,第三个是文件的Content-Type.
 
 处理器返回字符串,bytes,json或是一个`qiniu_ufop.Response`对象.
 
-没有特殊需求,日志直接输出stderr就好了
+日志可直接输出stderr.
 
 ## 使用
 ### 命令行工具

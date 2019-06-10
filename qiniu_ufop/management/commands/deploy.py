@@ -24,21 +24,15 @@ class Command(BaseCommand):
 
         # build
         print("build docker image...")
-        pr = subprocess.run(["docker", "build", dir, "-t", args.tag])
-        if pr.returncode != 0:
-            exit(pr.returncode)
+        self.run(["docker", "build", dir, "-t", args.tag])
 
         # 上载
         print("push docker image...")
-        pr = subprocess.run(["qdoractl", "push", args.tag])
-        if pr.returncode != 0:
-            exit(pr.returncode)
+        self.run(["qdoractl", "push", args.tag])
 
         # 发布
         print("release...")
-        pr = subprocess.run(["qdoractl", "release", "--config", dir])
-        if pr.returncode != 0:
-            exit(pr.returncode)
+        self.run(["qdoractl", "release", "--config", dir])
 
         print("success")
 
@@ -51,3 +45,15 @@ class Command(BaseCommand):
             "-v", "--version", required=True, help="版本")
         self.parser.add_argument("--flavor", default="C1M1", help="配置")
         self.parser.add_argument("--desc", help="描述")
+
+    def run(self, *args, **kwargs):
+        with subprocess.Popen(*args, **kwargs) as p:
+            try:
+                stdout, stderr = p.communicate()
+            except:
+                p.kill()
+                p.wait()
+                raise
+            retcode = p.poll()
+            if retcode != 0:
+                exit(retcode)
