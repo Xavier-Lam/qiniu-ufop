@@ -8,12 +8,12 @@
 
 项目官方站点 https://github.com/Xavier-Lam/qiniu-ufop
 
-- [Quickstart](#quickstart)
+- [Quickstart](#Quickstart)
   - [安装](#安装)
   - [开始项目](#开始项目)
   - [编写业务代码](#编写业务代码)
   - [本地运行项目](#本地运行项目)
-  - [生成Dockerfile并发布](#生成dockerfile并发布)
+  - [生成Dockerfile并发布](#生成Dockerfile并发布)
   - [激活](#激活)
   - [注意](#注意)
 - [开发](#开发)
@@ -27,13 +27,13 @@
 - [调试](#调试)
   - [本地调试处理程序](#本地调试处理程序)
   - [本地调试webserver](#本地调试webserver)
-  - [本地调试Docker](#本地调试docker)
+  - [本地调试Docker](#本地调试Docker)
 - [问题排查](#问题排查)
   - [日志查看](#日志查看)
   - [部署过程中遇到的异常](#部署过程中遇到的异常)
 - [Cookbook](#Cookbook)
   - [使用git更新代码](#使用git更新代码)
-- [TODOS:](#todos)
+- [TODOS:](#TODOS)
 
 ## Quickstart
 ### 安装
@@ -225,20 +225,22 @@ unset本机环境变量DOCKER_TLS_VERIFY(以windows为例)
 ### 使用git更新代码
 * 在工作路径下,生成ssh-key
 
-    md .ssh
-    ssh-keygen -f ./.ssh/id_rsa -t rsa -N ''
+        md .ssh
+        ssh-keygen -f ./.ssh/id_rsa -t rsa -N ''
 
 * 将生成的 ./.ssh/id_rsa.pub 加入git仓库的部署密钥中
 
 * 修改Dockerfile,在cmd前加入
 
-    RUN apt-get install git
-    ADD ./.ssh /root/.ssh
-    RUN git clone your@repository
+        RUN apt-get install git
+        ADD ./.ssh /root/.ssh
+        RUN chmod 400 /root/.ssh/id_rsa
+        RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+        RUN git clone your@repository
 
 * 修改script.sh
 
-    git pull origin master
+        git pull origin master
 
 > 注意: 由于将私钥加入了镜像,任何拿到你的镜像的用户,将可以获取到你的私钥
 

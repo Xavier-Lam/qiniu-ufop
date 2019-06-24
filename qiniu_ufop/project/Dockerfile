@@ -8,7 +8,7 @@ RUN mkdir -p /var/log
 
 # 安装基本环境
 RUN apt-get update
-RUN apt-get install -y wget build-essential cmake python-dev python3-pip
+RUN apt-get install -y wget python3-pip
 RUN apt-get install -y redis-server
 RUN pip3 install --upgrade pip -i https://pypi.douban.com/simple/
 RUN pip3 install supervisor -i https://pypi.douban.com/simple/
