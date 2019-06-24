@@ -26,7 +26,12 @@ class Command(BaseCommand):
             task = dispatcher.dispatch(buffer, args.cmd, args.content_type)
             result = task()
             response = result_handler.make_response(result)
-            sys.stdout.buffer.write(response.body)
+            data = response.body
+            if args.output:
+                with open(args.output, "wb") as f:
+                    f.write(response.body)
+            else:
+                sys.stdout.buffer.write(response.body)
 
     def add_arguments(self):
         self.parser.add_argument(
@@ -34,3 +39,4 @@ class Command(BaseCommand):
         self.parser.add_argument("filename", help="输入文件")
         self.parser.add_argument("-A", "--app")
         self.parser.add_argument("--content-type")
+        self.parser.add_argument("-o", "--output", help="输出文件")

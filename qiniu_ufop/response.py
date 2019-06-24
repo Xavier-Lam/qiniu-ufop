@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from tornado import httputil
+from tornado.httputil import HTTPHeaders, responses
 
 
 class Response(object):
     def __init__(self, code=200, headers=None, body=None, buffer=None,
                  reason=None):
         self.code = code
-        self.reason = reason or httputil.responses.get(code, "Unknown")
+        self.reason = reason or responses.get(code, "Unknown")
         self.buffer = buffer
-        self.headers = headers or httputil.HTTPHeaders()
+        self.headers = headers or HTTPHeaders()
         self._body = body
 
     @property

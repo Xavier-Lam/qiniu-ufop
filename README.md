@@ -31,6 +31,8 @@
 - [问题排查](#问题排查)
   - [日志查看](#日志查看)
   - [部署过程中遇到的异常](#部署过程中遇到的异常)
+- [Cookbook](#Cookbook)
+  - [使用git更新代码](#使用git更新代码)
 - [TODOS:](#todos)
 
 ## Quickstart
@@ -151,9 +153,9 @@
 
 > 注意:此处的cmd是不包括处理程序名的
 
-命令的结果将直接打印再控制台上,如需持久化,可将输出流导向某个文件,例如
+命令的结果将直接打印再控制台上,如需持久化,可使用output参数,例如
 
-    qiniu-ufop process test.png > output.png
+    qiniu-ufop process test.png -o output.png
 
 ### 本地调试webserver
 启动服务器及worker
@@ -219,12 +221,31 @@ unset本机环境变量DOCKER_TLS_VERIFY(以windows为例)
 
 再度执行部署(参见手工部署或一键部署)
 
+## Cookbook
+### 使用git更新代码
+* 在工作路径下,生成ssh-key
+
+    md .ssh
+    ssh-keygen -f ./.ssh/id_rsa -t rsa -N ''
+
+* 将生成的 ./.ssh/id_rsa.pub 加入git仓库的部署密钥中
+
+* 修改Dockerfile,在cmd前加入
+
+    RUN apt-get install git
+    ADD ./.ssh /root/.ssh
+    RUN git clone your@repository
+
+* 修改script.sh
+
+    git pull origin master
+
+> 注意: 由于将私钥加入了镜像,任何拿到你的镜像的用户,将可以获取到你的私钥
 
 ## TODOS:
 * 异常处理
 * 单元测试
 * 测试异步
-* 测试cpu-count
 
 > 吐槽一下七牛的工单处理,我提了至少3个bug,要么装傻,要么说对不起,我们有问题,请你使用其他方法...另外文档自定义数据处理这块文档也比较糟糕.
 

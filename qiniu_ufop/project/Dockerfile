@@ -33,4 +33,4 @@ ENV C_FORCE_ROOT 1
 # ...
 
 # 运行
-CMD /bin/bash -c "redis-server --save \"\" --appendonly no --daemonize yes && supervisord -n -c /etc/supervisord.conf"
+CMD /bin/bash -c "redis-server --save \"\" --appendonly no --daemonize yes && ./script.sh && supervisord -n -c /etc/supervisord.conf"
