@@ -8,32 +8,34 @@
 
 项目官方站点 https://github.com/Xavier-Lam/qiniu-ufop
 
-- [Quickstart](#Quickstart)
-  - [安装](#安装)
-  - [开始项目](#开始项目)
-  - [编写业务代码](#编写业务代码)
-  - [本地运行项目](#本地运行项目)
-  - [生成Dockerfile并发布](#生成Dockerfile并发布)
-  - [激活](#激活)
-  - [注意](#注意)
-- [开发](#开发)
-- [使用](#使用)
-  - [命令行工具](#命令行工具)
-  - [一键部署](#一键部署)
-  - [手工部署](#手工部署)
-    - [生成镜像](#生成镜像)
-    - [上载自定义处理程序](#上载自定义处理程序)
-    - [配置](#配置)
-- [调试](#调试)
-  - [本地调试处理程序](#本地调试处理程序)
-  - [本地调试webserver](#本地调试webserver)
-  - [本地调试Docker](#本地调试Docker)
-- [问题排查](#问题排查)
-  - [日志查看](#日志查看)
-  - [部署过程中遇到的异常](#部署过程中遇到的异常)
-- [Cookbook](#Cookbook)
-  - [使用git更新代码](#使用git更新代码)
-- [TODOS:](#TODOS)
+- [Quickstart](#quickstart)
+  - [安装](#%e5%ae%89%e8%a3%85)
+  - [开始项目](#%e5%bc%80%e5%a7%8b%e9%a1%b9%e7%9b%ae)
+  - [编写业务代码](#%e7%bc%96%e5%86%99%e4%b8%9a%e5%8a%a1%e4%bb%a3%e7%a0%81)
+  - [本地运行项目](#%e6%9c%ac%e5%9c%b0%e8%bf%90%e8%a1%8c%e9%a1%b9%e7%9b%ae)
+  - [生成Dockerfile并发布](#%e7%94%9f%e6%88%90dockerfile%e5%b9%b6%e5%8f%91%e5%b8%83)
+  - [激活](#%e6%bf%80%e6%b4%bb)
+  - [注意](#%e6%b3%a8%e6%84%8f)
+- [开发](#%e5%bc%80%e5%8f%91)
+- [使用](#%e4%bd%bf%e7%94%a8)
+  - [命令行工具](#%e5%91%bd%e4%bb%a4%e8%a1%8c%e5%b7%a5%e5%85%b7)
+  - [一键部署](#%e4%b8%80%e9%94%ae%e9%83%a8%e7%bd%b2)
+  - [手工部署](#%e6%89%8b%e5%b7%a5%e9%83%a8%e7%bd%b2)
+    - [生成镜像](#%e7%94%9f%e6%88%90%e9%95%9c%e5%83%8f)
+    - [上载自定义处理程序](#%e4%b8%8a%e8%bd%bd%e8%87%aa%e5%ae%9a%e4%b9%89%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f)
+    - [配置](#%e9%85%8d%e7%bd%ae)
+- [调试](#%e8%b0%83%e8%af%95)
+  - [本地调试处理程序](#%e6%9c%ac%e5%9c%b0%e8%b0%83%e8%af%95%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f)
+  - [本地调试webserver](#%e6%9c%ac%e5%9c%b0%e8%b0%83%e8%af%95webserver)
+  - [本地调试Docker](#%e6%9c%ac%e5%9c%b0%e8%b0%83%e8%af%95docker)
+- [问题排查](#%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5)
+  - [日志查看](#%e6%97%a5%e5%bf%97%e6%9f%a5%e7%9c%8b)
+  - [部署过程中遇到的异常](#%e9%83%a8%e7%bd%b2%e8%bf%87%e7%a8%8b%e4%b8%ad%e9%81%87%e5%88%b0%e7%9a%84%e5%bc%82%e5%b8%b8)
+    - [HTTP/1.x transport connection broken](#http1x-transport-connection-broken)
+    - [Cannot connect to the Docker daemon](#cannot-connect-to-the-docker-daemon)
+- [Cookbook](#cookbook)
+  - [使用git更新代码](#%e4%bd%bf%e7%94%a8git%e6%9b%b4%e6%96%b0%e4%bb%a3%e7%a0%81)
+- [TODOS:](#todos)
 
 ## Quickstart
 ### 安装
@@ -193,7 +195,10 @@
 七牛的日志查看好像经常取不到日志,建议自行在处理程序中埋一个下载日志的方法,来获取日志.可以参看示例项目
 
 ### 部署过程中遇到的异常
-在运行qdoractl push时,可能会遇到该异常,反正我是遇到了
+主要集中在qdoractl这玩意儿上,不能很好地读取到本地配置,又没有给予足够的参数个性化配置.
+
+#### HTTP/1.x transport connection broken
+在运行qdoractl push时,可能会遇到该异常,反正我是遇到了(Docker Toolbox)
 
     Get http://192.168.99.100:2376/v1.20/version: net/http: HTTP/1.x transport connection broken: malformed HTTP response "\x15\x03\x01\x00\x02\x02".
 
@@ -220,6 +225,19 @@ unset本机环境变量DOCKER_TLS_VERIFY(以windows为例)
     set DOCKER_TLS_VERIFY=
 
 再度执行部署(参见手工部署或一键部署)
+
+#### Cannot connect to the Docker daemon
+同样在qdoractl push时遇到该错误,环境时Docker for Windows
+
+    Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+
+解决的方案是
+
+设置环境变量`DOCKER_HOST=tcp://127.0.0.1:2375`
+
+    set DOCKER_HOST=tcp://127.0.0.1:2375
+
+在Docker for Windows的Settings中,勾选General的`Expose daemon on tcp://localhost:2375 without TLS`
 
 ## Cookbook
 ### 使用git更新代码
